@@ -1,6 +1,6 @@
 {
-  "name": "serverless-plugin-typescript",
-  "version": "0.0.0-semantic-release",
+  "name": "serverless-plugin-typescript-graphql-codegen",
+  "version": "0.0.1",
   "license": "MIT",
   "main": "dist/src/index.js",
   "files": [
@@ -24,13 +24,18 @@
     "serverless",
     "serverless plugin",
     "typescript",
-    "aws lambda"
+    "aws lambda",
+    "serverless graphql",
+    "graphql codegen"
   ],
   "devDependencies": {
+    "@graphql-codegen/cli": "^1.17.8",
+    "@graphql-codegen/typescript": "^1.17.9",
     "@types/fs-extra": "5.0.5",
     "@types/jest": "24.0.12",
     "@types/lodash": "4.14.123",
     "@types/node": "12.6.2",
+    "graphql": "^15.3.0",
     "jest": "24.5.0",
     "mock-fs": "4.9.0",
     "rimraf": "2.6.3",
