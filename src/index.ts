@@ -168,8 +168,16 @@ export class TypeScriptPlugin {
       {
         schema: this.graphqlFilePaths,
         generates: {
-          [process.cwd() + '/generated/graphql.ts']: {
+          [process.cwd() + '/src/generated/graphql.ts']: {
             plugins: ['typescript'],
+            config: {
+              typesPrefix: 'I',
+              declarationKind: 'interface',
+              namingConvention: {
+                typeNames: 'pascal-case#pascalCase',
+                enumValues: 'upper-case#upperCase',
+              }
+            }
           },
         },
       },
