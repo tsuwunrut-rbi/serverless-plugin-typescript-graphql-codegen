@@ -171,7 +171,9 @@ export class TypeScriptPlugin {
           [process.cwd() + '/src/generated/graphql.ts']: {
             plugins: ['typescript'],
             config: {
+              skipTypename: true,
               typesPrefix: 'I',
+              enumPrefix: false,
               declarationKind: 'interface',
               namingConvention: {
                 typeNames: 'pascal-case#pascalCase',
