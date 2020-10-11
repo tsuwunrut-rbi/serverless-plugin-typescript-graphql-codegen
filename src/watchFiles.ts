@@ -1,6 +1,8 @@
 import * as typescript from './typescript'
 import { watchFile, unwatchFile, Stats } from 'fs'
 import globby from 'globby'
+const path = require('path')
+const shell = require('shelljs')
 
 const determineNewWatchFiles = (watchedFiles, newWatchFiles, cb) => {
   watchedFiles.forEach((fileName) => {
@@ -38,15 +40,35 @@ export async function watchFiles(
     watchedFiles = newWatchFiles
   }
 
-  const watchGraphqlCallback = async (curr: Stats, prev: Stats) => {
+  const watchGraphqlCallback = (changedFilePath) => async (
+    curr: Stats,
+    prev: Stats
+  ) => {
     // Check timestamp
     if (+curr.mtime <= +prev.mtime) {
       return
     }
+    const copyChangedGraphqlFileToBuild = () => {
+      const basePath = path.basename(path.resolve(process.cwd()))
+      const basePathIndex = changedFilePath.indexOf(basePath) + basePath.length
+
+      const buildPath =
+        changedFilePath.slice(0, basePathIndex) +
+        '/.build' +
+        changedFilePath.slice(basePathIndex)
+
+      shell.cp(changedFilePath, buildPath)
+    }
+
     generateGraphqlTypes()
+    copyChangedGraphqlFileToBuild()
     // use can reference not watched yet file or remove reference to already watched
     const newWatchGqlFiles = await globby(graphqlFilePaths)
-    determineNewWatchFiles(watchedGraphqlFiles, newWatchGqlFiles, generateGraphqlTypes)
+    determineNewWatchFiles(
+      watchedGraphqlFiles,
+      newWatchGqlFiles,
+      generateGraphqlTypes
+    )
     watchedGraphqlFiles = newWatchGqlFiles
   }
 
@@ -56,7 +78,11 @@ export async function watchFiles(
 
   if (watchedGraphqlFiles.length) {
     watchedGraphqlFiles.forEach((fileName) => {
-      watchFile(fileName, { persistent: true, interval: 250 }, watchGraphqlCallback)
+      watchFile(
+        fileName,
+        { persistent: true, interval: 250 },
+        watchGraphqlCallback(fileName)
+      )
     })
   }
 }
